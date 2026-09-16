@@ -1,0 +1,14 @@
+model OrderDetail {
+    id          Int      @id @default(autoincrement())
+    productMeta Json?
+    productId   Int
+    orderId     Int
+    quantity    Int
+    price       Int
+    product     Product  @relation(fields: [productId], references: [id])
+    order       Order    @relation(fields: [orderId], references: [id])
+    createdAt   DateTime @default(now()) @db.Timestamp()
+    updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp()
+
+    @@map("order_details")
+}

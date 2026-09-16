@@ -1,0 +1,15 @@
+name: ecommerce-dash-db
+services:
+  db:
+    image: mysql:8.0 # Using a specific version is a good practice
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 123456 # (Change this to a strong password)
+      MYSQL_DATABASE: ecommerce-db # (Optional: creates a default database)
+    ports:
+      - "3310:3306" # Maps host port 3306 to container port 3306
+    volumes:
+      - mysql_data:/var/lib/mysql # Persists data to a named volume
+
+volumes:
+  mysql_data:

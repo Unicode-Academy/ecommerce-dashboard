@@ -15,7 +15,8 @@ export const createOrderSchema = z.object({
         quantity: z.number({
             error: "quantity is required"
         })
-    }), "Order detail is array").min(1)
+    }), "Order detail is array").min(1),
+    paymentMethod: z.number({ error: "Payment Method invalid" })
 }).refine(({ customer, customerId }) => {
     if (!customer && !customerId) {
         return false;

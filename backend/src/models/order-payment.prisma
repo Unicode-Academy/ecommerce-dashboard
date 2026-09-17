@@ -1,0 +1,20 @@
+enum PaymentStatus {
+    PENDING
+    FAILED
+    CANCELED
+    PAID
+}
+
+model OrderPayment {
+    id              Int           @id @default(autoincrement())
+    orderId         Int           @unique
+    paymentMethodId Int
+    order           Order         @relation(fields: [orderId], references: [id])
+    paymentMethod   PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+    status          PaymentStatus @default(PENDING)
+    createdAt       DateTime      @default(now()) @db.Timestamp()
+    updatedAt       DateTime      @default(now()) @updatedAt @db.Timestamp()
+
+    @@unique([orderId, paymentMethodId])
+    @@map("orders_payments")
+}

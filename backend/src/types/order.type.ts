@@ -13,5 +13,6 @@ export type OrderData = {
     details: {
         productId: number,
         quantity: number,
-    }[]
+    }[],
+    paymentMethod: number
 }

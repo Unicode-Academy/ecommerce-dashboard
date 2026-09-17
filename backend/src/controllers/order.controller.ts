@@ -38,6 +38,14 @@ export const orderController = {
         })
     },
 
+    async findPaymentStatusList(req: Request, res: Response) {
+        return res.json({
+            data: ['PENDING', 'FAILED', 'CANCELED', 'PAID'],
+            success: true,
+            message: "Get payment status list"
+        })
+    },
+
     async updateStatus(req: Request, res: Response) {
         const { id } = req.params;
         const { status } = req.body;
@@ -49,5 +57,26 @@ export const orderController = {
                 message: "Update status success"
             }
         );
+    },
+
+    async updatePaymentStatus(req: Request, res: Response) {
+        const { id } = req.params;
+        const { status } = req.body;
+        await orderService.updateOrderStatus(+id!, status);
+        return res.json({
+            success: true,
+            message: "Update status success"
+        })
+    },
+
+    async updateNote(req: Request, res: Response) {
+        const { id } = req.params;
+        const { note } = req.body;
+        const data = await orderService.updateNote(+id!, note);
+        return res.json({
+            success: true,
+            message: "Update note success",
+            data
+        })
     }
 }

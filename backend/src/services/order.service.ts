@@ -1,5 +1,5 @@
 import { NotFoundException } from "../exceptions/NotFoundException";
-import { OrderStatus } from "../generated/prisma/enums";
+import { OrderStatus, PaymentStatus } from "../generated/prisma/enums";
 import { prisma } from "../libs/prisma"
 import { OrderData } from "../types/order.type"
 import { productService } from "./product.service";
@@ -20,14 +20,13 @@ export const orderService = {
             }
         })
     },
-    async create({ details, customer, ...data }: OrderData) {
+    async create({ details, paymentMethod, customer, ...data }: OrderData) {
         const customerJson = JSON.stringify(customer);
         const amounts = await Promise.all(details.map(async (detail) => {
             const product = await productService.find(detail.productId);
             return product.price * detail.quantity;
         }));
         const total = amounts.reduce((acc, cur) => acc + cur, 0);
-
         return prisma.order.create({
             data: {
                 ...data,
@@ -51,9 +50,15 @@ export const orderService = {
                             }
                         }))
                     }
+                },
+                orderPayment: {
+                    create: {
+                        paymentMethodId: paymentMethod
+                    }
                 }
             }
         })
+
     },
 
     async updateStatus(orderId: number, status: OrderStatus) {
@@ -69,7 +74,12 @@ export const orderService = {
                 id
             },
             include: {
-                orderDetails: true
+                orderDetails: true,
+                orderPayment: {
+                    include: {
+                        paymentMethod: true
+                    }
+                }
             }
         });
         if (!order) {
@@ -77,7 +87,7 @@ export const orderService = {
         }
 
         const customer = JSON.parse(order.customer as string);
-
+        const { paymentMethod, ...orderPayment } = order.orderPayment[0]!;
         return {
             ...order,
             orderDetails: order.orderDetails.map(({ productMeta, ...item }) => {
@@ -87,7 +97,33 @@ export const orderService = {
                     product
                 }
             }),
-            customer
+            customer,
+            orderPayment: {
+                ...orderPayment,
+                name: paymentMethod.name
+            }
         };
+    },
+
+    async updateOrderStatus(orderId: number, status: PaymentStatus) {
+        return prisma.orderPayment.update({
+            where: {
+                orderId
+            },
+            data: {
+                status
+            }
+        })
+    },
+
+    async updateNote(orderId: number, note: string) {
+        return prisma.order.update({
+            where: {
+                id: orderId
+            },
+            data: {
+                note
+            }
+        })
     }
 }

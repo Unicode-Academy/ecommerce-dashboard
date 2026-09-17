@@ -16,16 +16,37 @@ import {
   ReceiptText,
   User,
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { getOrder } from "@/services/order.service";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getOrder,
+  getOrderStatusList,
+  getPaymentStatusList,
+  updateNote,
+  updateOrderStatus,
+  updatePaymentStatus,
+} from "@/services/order.service";
 import moment from "moment";
 import type { Order } from "@/types/order.type";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { cn } from "@/lib/utils";
-import { STATUS_BG_CLASSES } from "@/constants/order.constant";
+import {
+  PAYMENT_STATUS_BG,
+  STATUS_BG_CLASSES,
+} from "@/constants/order.constant";
+import Modal from "@/components/modals/Modal";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { toast } from "sonner";
+import { debounce } from "@/utils/utils";
 export default function OrderDetail() {
   const { id } = useParams();
-
+  const [statusModal, setStatusModal] = useState<boolean>(false);
+  const [paymentStatusModal, setPaymentStatusModal] = useState<boolean>(false);
   const {
     data: order,
     isLoading,
@@ -34,6 +55,14 @@ export default function OrderDetail() {
     queryKey: ["orders", id],
     queryFn: () => getOrder(+id!),
     initialData: {} as Order,
+  });
+  const { data: orderStatusList } = useQuery({
+    queryKey: ["order-status"],
+    queryFn: getOrderStatusList,
+  });
+  const { data: paymentStatusList } = useQuery({
+    queryKey: ["payment-status"],
+    queryFn: getPaymentStatusList,
   });
   const subTotal = useMemo(
     () =>
@@ -47,6 +76,19 @@ export default function OrderDetail() {
     () => order.orderDetails?.reduce((acc, cur) => acc + cur.quantity, 0),
     [order.orderDetails],
   );
+  const queryClient = useQueryClient();
+  const statusMutation = useMutation({
+    mutationFn: updateOrderStatus,
+  });
+
+  const paymentStatusMutation = useMutation({
+    mutationFn: updatePaymentStatus,
+  });
+
+  const noteMutation = useMutation({
+    mutationFn: updateNote,
+  });
+
   return (
     <>
       <h1 className="mb-5 font-medium text-3xl">Order detail: #{id}</h1>
@@ -75,7 +117,7 @@ export default function OrderDetail() {
               </div>
               <div>
                 <span className="block">Payment</span>
-                <span className="font-medium">-</span>
+                <span className="font-medium">{order?.orderPayment?.name}</span>
               </div>
               <div>
                 <span className="block">Order Status</span>
@@ -85,6 +127,9 @@ export default function OrderDetail() {
                       STATUS_BG_CLASSES[order.status],
                       "cursor-pointer hover:opacity-65",
                     )}
+                    onClick={() => {
+                      setStatusModal(true);
+                    }}
                   >
                     {order.status}
                   </Button>
@@ -113,7 +158,7 @@ export default function OrderDetail() {
                   </TableHeader>
                   <TableBody>
                     {order.orderDetails?.map((item) => (
-                      <TableRow>
+                      <TableRow key={item.product.id}>
                         <TableCell>
                           <img
                             src={`${import.meta.env.VITE_SERVER_UPLOAD}${item.product.thumbnail}`}
@@ -134,7 +179,12 @@ export default function OrderDetail() {
               <div className="bg-white mb-3 p-5 rounded-lg">
                 <div className="flex justify-between items-center mb-3">
                   <h2 className="font-medium text-xl">Payment Status</h2>
-                  <Button variant={"destructive"}>Not paid</Button>
+                  <Button
+                    onClick={() => setPaymentStatusModal(true)}
+                    className={PAYMENT_STATUS_BG[order?.orderPayment?.status]}
+                  >
+                    {order?.orderPayment?.status}
+                  </Button>
                 </div>
                 <hr className="mb-3" />
                 <div className="flex mb-3">
@@ -166,7 +216,7 @@ export default function OrderDetail() {
                 <hr className="mb-3" />
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-gray-200 p-1 border rounded-sm">
-                    <User />
+                    <User size={18} />
                   </div>
                   <div className="text-sm">
                     <span className="block">Name</span>
@@ -177,7 +227,7 @@ export default function OrderDetail() {
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-gray-200 p-1 border rounded-sm">
-                    <Mail />
+                    <Mail size={18} />
                   </div>
                   <div className="text-sm">
                     <span className="block">Email</span>
@@ -189,7 +239,7 @@ export default function OrderDetail() {
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-gray-200 p-1 border rounded-sm">
-                    <Phone />
+                    <Phone size={18} />
                   </div>
                   <div className="text-sm">
                     <span className="block">Phone</span>
@@ -201,7 +251,7 @@ export default function OrderDetail() {
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-gray-200 p-1 border rounded-sm">
-                    <MapPin />
+                    <MapPin size={18} />
                   </div>
                   <div className="text-sm">
                     <span className="block">Shipping Address</span>
@@ -213,7 +263,7 @@ export default function OrderDetail() {
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-gray-200 p-1 border rounded-sm">
-                    <ReceiptText />
+                    <ReceiptText size={18} />
                   </div>
                   <div className="text-sm">
                     <span className="block">Billing Address</span>
@@ -224,23 +274,134 @@ export default function OrderDetail() {
                 </div>
                 <div className="flex items-center gap-2 mb-3">
                   <div className="bg-gray-200 p-1 border rounded-sm">
-                    <CreditCard />
+                    <CreditCard size={18} />
                   </div>
                   <div className="text-sm">
                     <span className="block">Payment</span>
-                    <span className="block font-medium">-</span>
+                    <span className={cn("block font-medium")}>
+                      <span
+                        className={cn(
+                          PAYMENT_STATUS_BG[order?.orderPayment?.status],
+                          "inline-block px-2 py-1",
+                        )}
+                      >
+                        {order?.orderPayment?.status}
+                      </span>
+                    </span>
                   </div>
                 </div>
               </div>
               <div className="bg-white mb-3 p-5 rounded-lg">
                 <h2 className="mb-3 font-medium text-xl">Note</h2>
                 <hr className="mb-3" />
-                <p>{order.note}</p>
+                <div
+                  contentEditable
+                  dangerouslySetInnerHTML={{ __html: order.note }}
+                  onInput={debounce((e) => {
+                    const target = e.target as HTMLInputElement;
+                    const note = target.innerText.trim();
+                    noteMutation.mutate(
+                      {
+                        orderId: +id!,
+                        note,
+                      },
+                      {
+                        onSuccess: () => {
+                          queryClient.invalidateQueries({
+                            queryKey: ["orders", id],
+                          });
+                          toast.success("Update note success");
+                        },
+                        onError: () => {
+                          toast.error("Update note failed");
+                        },
+                      },
+                    );
+                  })}
+                />
               </div>
             </div>
           </div>
         </>
       )}
+
+      <Modal
+        open={statusModal}
+        onClose={() => {
+          setStatusModal(false);
+        }}
+        title="Change Status"
+      >
+        <Select
+          value={order.status}
+          onValueChange={(status: string) => {
+            statusMutation.mutate(
+              {
+                orderId: +id!,
+                status,
+              },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({ queryKey: ["orders", id] });
+                  toast.success("Change status success");
+                  setStatusModal(false);
+                },
+                onError: () => {
+                  toast.error("Change status failed");
+                },
+              },
+            );
+          }}
+        >
+          <SelectTrigger className="py-5 w-full">
+            <SelectValue placeholder="Select a Status" />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            {orderStatusList?.map((item: string) => (
+              <SelectItem value={item}>{item}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Modal>
+
+      <Modal
+        open={paymentStatusModal}
+        onClose={() => {
+          setPaymentStatusModal(false);
+        }}
+        title="Change Payment Status"
+      >
+        <Select
+          value={order?.orderPayment?.status}
+          onValueChange={(status: string) => {
+            paymentStatusMutation.mutate(
+              {
+                orderId: +id!,
+                status,
+              },
+              {
+                onSuccess: () => {
+                  queryClient.invalidateQueries({ queryKey: ["orders", id] });
+                  toast.success("Change payment status success");
+                  setPaymentStatusModal(false);
+                },
+                onError: () => {
+                  toast.error("Change payment status failed");
+                },
+              },
+            );
+          }}
+        >
+          <SelectTrigger className="py-5 w-full">
+            <SelectValue placeholder="Select a Status" />
+          </SelectTrigger>
+          <SelectContent className="w-full">
+            {paymentStatusList?.map((item: string) => (
+              <SelectItem value={item}>{item}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </Modal>
     </>
   );
 }

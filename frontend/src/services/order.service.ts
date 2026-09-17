@@ -10,6 +10,10 @@ export const getOrderStatusList = async () => {
     const response = await instance.get(`/orders/status`);
     return response.data.data;
 }
+export const getPaymentStatusList = async () => {
+    const response = await instance.get(`/orders/payment-status`);
+    return response.data.data;
+}
 
 export const updateOrderStatus = async ({ orderId, status }: { orderId: number, status: string }) => {
     const response = await instance.patch(`/orders/${orderId}/status`, {
@@ -18,7 +22,21 @@ export const updateOrderStatus = async ({ orderId, status }: { orderId: number, 
     return response.data.data;
 }
 
+export const updatePaymentStatus = async ({ orderId, status }: { orderId: number, status: string }) => {
+    const response = await instance.patch(`/orders/${orderId}/payment-status`, {
+        status
+    });
+    return response.data.data;
+}
+
 export const getOrder = async (orderId: number): Promise<Order> => {
     const response = await instance.get(`/orders/${orderId}`);
     return response.data.data;
-}   
+}
+
+export const updateNote = async ({ orderId, note }: { orderId: number, note: string }) => {
+    const response = await instance.patch(`/orders/${orderId}/note`, {
+        note
+    });
+    return response.data.data;
+}

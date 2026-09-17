@@ -9,15 +9,16 @@ enum OrderStatus {
 }
 
 model Order {
-    id           Int           @id @default(autoincrement())
+    id           Int            @id @default(autoincrement())
     customer     Json?
     customerId   Int?
     total        Int
-    status       OrderStatus   @default(PENDING)
-    note         String?       @db.Text()
-    createdAt    DateTime      @default(now()) @db.Timestamp()
-    updatedAt    DateTime      @default(now()) @updatedAt @db.Timestamp()
+    status       OrderStatus    @default(PENDING)
+    note         String?        @db.Text()
+    createdAt    DateTime       @default(now()) @db.Timestamp()
+    updatedAt    DateTime       @default(now()) @updatedAt @db.Timestamp()
     orderDetails OrderDetail[]
+    orderPayment OrderPayment[]
 
     @@map("orders")
 }

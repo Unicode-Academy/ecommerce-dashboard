@@ -7,3 +7,10 @@ export const STATUS_BG_CLASSES = {
     CANCELLED: "bg-gray-100 text-gray-800 border-gray-200",
     REFUNDED: "bg-rose-100 text-rose-800 border-rose-200",
 };
+
+export const PAYMENT_STATUS_BG = {
+    PENDING: 'bg-amber-100 text-amber-800',
+    FAILED: 'bg-red-100 text-red-800',
+    CANCELED: 'bg-gray-100 text-gray-800',
+    PAID: 'bg-emerald-100 text-emerald-800'
+};

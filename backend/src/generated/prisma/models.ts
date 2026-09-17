@@ -10,7 +10,9 @@
  */
 export type * from './models/Category'
 export type * from './models/OrderDetail'
+export type * from './models/OrderPayment'
 export type * from './models/Order'
+export type * from './models/PaymentMethod'
 export type * from './models/Product'
 export type * from './models/ProductImage'
 export type * from './commonInputTypes'

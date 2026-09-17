@@ -22,5 +22,9 @@ export type Order = {
         price: number;
         quantity: number;
         product: Product
-    }[]
+    }[],
+    orderPayment: {
+        name: string;
+        status: "PENDING" | "FAILED" | "CANCELED" | "PAID"
+    }
 }

@@ -28,10 +28,20 @@ export type Category = Prisma.CategoryModel
  */
 export type OrderDetail = Prisma.OrderDetailModel
 /**
+ * Model OrderPayment
+ * 
+ */
+export type OrderPayment = Prisma.OrderPaymentModel
+/**
  * Model Order
  * 
  */
 export type Order = Prisma.OrderModel
+/**
+ * Model PaymentMethod
+ * 
+ */
+export type PaymentMethod = Prisma.PaymentMethodModel
 /**
  * Model Product
  * 

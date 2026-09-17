@@ -1,0 +1,15 @@
+enum PaymentMethodStatus {
+    DRAFT
+    PUBLISH
+}
+
+model PaymentMethod {
+    id           Int                 @id @default(autoincrement())
+    name         String              @db.VarChar(100)
+    status       PaymentMethodStatus @default(PUBLISH)
+    orderPayment OrderPayment[]
+    createdAt    DateTime            @default(now()) @db.Timestamp()
+    updatedAt    DateTime            @default(now()) @updatedAt @db.Timestamp()
+
+    @@map("payment_method")
+}

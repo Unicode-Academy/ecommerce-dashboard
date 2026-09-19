@@ -26,5 +26,11 @@ export type Order = {
     orderPayment: {
         name: string;
         status: "PENDING" | "FAILED" | "CANCELED" | "PAID"
-    }
+    },
+    tracking?: {
+        status: "PENDING" | "FAILED" | "CANCELED" | "PAID",
+        title: string,
+        note: string,
+        createdAt: Date
+    }[]
 }

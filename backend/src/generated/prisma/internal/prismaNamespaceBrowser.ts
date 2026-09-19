@@ -54,6 +54,7 @@ export const ModelName = {
   Category: 'Category',
   OrderDetail: 'OrderDetail',
   OrderPayment: 'OrderPayment',
+  OrderTracking: 'OrderTracking',
   Order: 'Order',
   PaymentMethod: 'PaymentMethod',
   Product: 'Product',
@@ -111,6 +112,19 @@ export const OrderPaymentScalarFieldEnum = {
 } as const
 
 export type OrderPaymentScalarFieldEnum = (typeof OrderPaymentScalarFieldEnum)[keyof typeof OrderPaymentScalarFieldEnum]
+
+
+export const OrderTrackingScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  status: 'status',
+  title: 'title',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderTrackingScalarFieldEnum = (typeof OrderTrackingScalarFieldEnum)[keyof typeof OrderTrackingScalarFieldEnum]
 
 
 export const OrderScalarFieldEnum = {
@@ -212,6 +226,14 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const OrderTrackingOrderByRelevanceFieldEnum = {
+  title: 'title',
+  note: 'note'
+} as const
+
+export type OrderTrackingOrderByRelevanceFieldEnum = (typeof OrderTrackingOrderByRelevanceFieldEnum)[keyof typeof OrderTrackingOrderByRelevanceFieldEnum]
 
 
 export const OrderOrderByRelevanceFieldEnum = {

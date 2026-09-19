@@ -132,3 +132,7 @@
 .ql-container.ql-snow {
   border: none !important;
 }
+
+body {
+  background: #f5f6fa;
+}

@@ -33,6 +33,11 @@ export type OrderDetail = Prisma.OrderDetailModel
  */
 export type OrderPayment = Prisma.OrderPaymentModel
 /**
+ * Model OrderTracking
+ * 
+ */
+export type OrderTracking = Prisma.OrderTrackingModel
+/**
  * Model Order
  * 
  */

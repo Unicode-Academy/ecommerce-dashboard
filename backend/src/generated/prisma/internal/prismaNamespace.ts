@@ -387,6 +387,7 @@ export const ModelName = {
   Category: 'Category',
   OrderDetail: 'OrderDetail',
   OrderPayment: 'OrderPayment',
+  OrderTracking: 'OrderTracking',
   Order: 'Order',
   PaymentMethod: 'PaymentMethod',
   Product: 'Product',
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "category" | "orderDetail" | "orderPayment" | "order" | "paymentMethod" | "product" | "productImage"
+    modelProps: "category" | "orderDetail" | "orderPayment" | "orderTracking" | "order" | "paymentMethod" | "product" | "productImage"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -605,6 +606,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.OrderPaymentCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.OrderPaymentCountAggregateOutputType> | number
+        }
+      }
+    }
+    OrderTracking: {
+      payload: Prisma.$OrderTrackingPayload<ExtArgs>
+      fields: Prisma.OrderTrackingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OrderTrackingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OrderTrackingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>
+        }
+        findFirst: {
+          args: Prisma.OrderTrackingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OrderTrackingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>
+        }
+        findMany: {
+          args: Prisma.OrderTrackingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>[]
+        }
+        create: {
+          args: Prisma.OrderTrackingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>
+        }
+        createMany: {
+          args: Prisma.OrderTrackingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.OrderTrackingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>
+        }
+        update: {
+          args: Prisma.OrderTrackingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>
+        }
+        deleteMany: {
+          args: Prisma.OrderTrackingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OrderTrackingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.OrderTrackingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OrderTrackingPayload>
+        }
+        aggregate: {
+          args: Prisma.OrderTrackingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOrderTracking>
+        }
+        groupBy: {
+          args: Prisma.OrderTrackingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderTrackingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OrderTrackingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OrderTrackingCountAggregateOutputType> | number
         }
       }
     }
@@ -948,6 +1015,19 @@ export const OrderPaymentScalarFieldEnum = {
 export type OrderPaymentScalarFieldEnum = (typeof OrderPaymentScalarFieldEnum)[keyof typeof OrderPaymentScalarFieldEnum]
 
 
+export const OrderTrackingScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  status: 'status',
+  title: 'title',
+  note: 'note',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrderTrackingScalarFieldEnum = (typeof OrderTrackingScalarFieldEnum)[keyof typeof OrderTrackingScalarFieldEnum]
+
+
 export const OrderScalarFieldEnum = {
   id: 'id',
   customer: 'customer',
@@ -1047,6 +1127,14 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const OrderTrackingOrderByRelevanceFieldEnum = {
+  title: 'title',
+  note: 'note'
+} as const
+
+export type OrderTrackingOrderByRelevanceFieldEnum = (typeof OrderTrackingOrderByRelevanceFieldEnum)[keyof typeof OrderTrackingOrderByRelevanceFieldEnum]
 
 
 export const OrderOrderByRelevanceFieldEnum = {
@@ -1253,6 +1341,7 @@ export type GlobalOmitConfig = {
   category?: Prisma.CategoryOmit
   orderDetail?: Prisma.OrderDetailOmit
   orderPayment?: Prisma.OrderPaymentOmit
+  orderTracking?: Prisma.OrderTrackingOmit
   order?: Prisma.OrderOmit
   paymentMethod?: Prisma.PaymentMethodOmit
   product?: Prisma.ProductOmit

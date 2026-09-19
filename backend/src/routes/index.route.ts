@@ -10,6 +10,7 @@ import { orderController } from "../controllers/order.controller";
 import { createOrderSchema } from "../validators/order.validator";
 import { paymentController } from "../controllers/payment.controller";
 import { createPaymentMethod, updatePaymentMethod } from "../validators/payment.validator";
+import { trackingController } from "../controllers/tracking.controller";
 const router = express.Router();
 router.get("/categories", categoryController.findAll);
 router.get("/categories/:id", categoryController.find);
@@ -49,11 +50,14 @@ router.patch('/orders/:id/status', orderController.updateStatus);
 router.get('/orders/:id', orderController.find);
 router.patch('/orders/:id/payment-status', orderController.updatePaymentStatus);
 router.patch('/orders/:id/note', orderController.updateNote);
+router.delete('/orders/:id', orderController.delete);
+router.get('/orders/:id/tracking', trackingController.findByStatus);
 
 router.get('/payments/method', paymentController.getListMethod);
 router.post('/payments/method', validate(createPaymentMethod), paymentController.createMethod);
 router.patch('/payments/method/:id', validate(updatePaymentMethod), paymentController.updateMethod);
 router.delete('/payments/method/:id', paymentController.deleteMethod);
+
 
 
 export default router;

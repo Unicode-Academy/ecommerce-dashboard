@@ -43,6 +43,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { debounce } from "@/utils/utils";
+import Timeline from "@/components/timeline";
 export default function OrderDetail() {
   const { id } = useParams();
   const [statusModal, setStatusModal] = useState<boolean>(false);
@@ -207,6 +208,7 @@ export default function OrderDetail() {
                   </div>
                 </div>
               </div>
+              <Timeline order={order} />
             </div>
             <div className="flex-1">
               <div className="bg-white mb-3 p-5 rounded-lg">

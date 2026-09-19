@@ -19,6 +19,7 @@ import {
 import { STATUS_BG_CLASSES } from "@/constants/order.constant";
 import { cn } from "@/lib/utils";
 import {
+  deleteOrder,
   getOrderList,
   getOrderStatusList,
   updateOrderStatus,
@@ -29,6 +30,7 @@ import { Eye, Trash } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
+import AlertModal from "@/components/modals/AlertModal";
 export default function Orders() {
   const [customerModal, setCustomerModal] = useState<boolean>(false);
   const [statusModal, setStatusModal] = useState<boolean>(false);
@@ -40,6 +42,8 @@ export default function Orders() {
     orderId: 0,
     status: "PENDING",
   });
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [idDelete, setIdDelete] = useState(0);
   const {
     data: orders,
     error,
@@ -58,6 +62,12 @@ export default function Orders() {
   const queryClient = useQueryClient();
   const statusMutation = useMutation({
     mutationFn: updateOrderStatus,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: number) => {
+      return deleteOrder(id);
+    },
   });
 
   return (
@@ -141,6 +151,10 @@ export default function Orders() {
                       <Button
                         variant={"destructive"}
                         className="cursor-pointer"
+                        onClick={() => {
+                          setDeleteModal(true);
+                          setIdDelete(order.id);
+                        }}
                       >
                         <Trash />
                       </Button>
@@ -209,6 +223,26 @@ export default function Orders() {
           </SelectContent>
         </Select>
       </Modal>
+      <AlertModal
+        title="Bạn có chắc chắn muốn xóa?"
+        open={deleteModal}
+        onClose={() => {
+          setDeleteModal(false);
+        }}
+        onContinue={() => {
+          deleteMutation.mutate(idDelete, {
+            onSuccess: () => {
+              queryClient.invalidateQueries({ queryKey: ["orders"] });
+              toast.success("Delete order success");
+            },
+            onError: () => {
+              toast.error("Delete order failed");
+            },
+          });
+        }}
+      >
+        <p>Nếu bấm Continue bạn không thể khôi phục được</p>
+      </AlertModal>
     </>
   );
 }

@@ -55,6 +55,11 @@ export const orderService = {
                     create: {
                         paymentMethodId: paymentMethod
                     }
+                },
+                tracking: {
+                    create: {
+                        status: "PENDING"
+                    }
                 }
             }
         })
@@ -64,7 +69,14 @@ export const orderService = {
     async updateStatus(orderId: number, status: OrderStatus) {
         return prisma.order.update({
             where: { id: orderId },
-            data: { status }
+            data: {
+                status,
+                tracking: {
+                    create: {
+                        status
+                    }
+                }
+            }
         })
     },
 
@@ -79,7 +91,8 @@ export const orderService = {
                     include: {
                         paymentMethod: true
                     }
-                }
+                },
+                tracking: true
             }
         });
         if (!order) {
@@ -125,5 +138,26 @@ export const orderService = {
                 note
             }
         })
+    },
+
+    async delete(orderId: number) {
+        const [order] = await prisma.$transaction([
+            prisma.orderDetail.deleteMany({
+                where: {
+                    orderId
+                }
+            }),
+            prisma.orderPayment.delete({
+                where: {
+                    orderId
+                }
+            }),
+            prisma.order.delete({
+                where: {
+                    id: orderId
+                }
+            })
+        ]);
+        return order;
     }
 }

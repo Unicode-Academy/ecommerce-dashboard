@@ -40,3 +40,8 @@ export const updateNote = async ({ orderId, note }: { orderId: number, note: str
     });
     return response.data.data;
 }
+
+export const deleteOrder = async (orderId: number) => {
+    const response = await instance.delete(`/orders/${orderId}`);
+    return response.data.data;
+}

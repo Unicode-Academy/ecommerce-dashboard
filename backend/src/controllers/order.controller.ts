@@ -78,5 +78,15 @@ export const orderController = {
             message: "Update note success",
             data
         })
+    },
+
+    async delete(req: Request, res: Response) {
+        const { id } = req.params;
+        const data = await orderService.delete(+id!);
+        return res.json({
+            data,
+            success: true,
+            message: "Delete order success"
+        })
     }
 }

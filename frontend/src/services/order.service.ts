@@ -15,9 +15,11 @@ export const getPaymentStatusList = async () => {
     return response.data.data;
 }
 
-export const updateOrderStatus = async ({ orderId, status }: { orderId: number, status: string }) => {
+export const updateOrderStatus = async ({ orderId, status, title, note }: { orderId: number, status: string, title: string, note: string }) => {
     const response = await instance.patch(`/orders/${orderId}/status`, {
-        status
+        status,
+        title,
+        note
     });
     return response.data.data;
 }

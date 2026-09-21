@@ -48,8 +48,8 @@ export const orderController = {
 
     async updateStatus(req: Request, res: Response) {
         const { id } = req.params;
-        const { status } = req.body;
-        const data = await orderService.updateStatus(+id!, status);
+        const { status, title, note } = req.body;
+        const data = await orderService.updateStatus(+id!, status, title, note);
         return res.json(
             {
                 data,

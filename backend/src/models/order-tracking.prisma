@@ -8,5 +8,6 @@ model OrderTracking {
     createdAt DateTime    @default(now()) @db.Timestamp()
     updatedAt DateTime    @default(now()) @updatedAt @db.Timestamp()
 
+    @@unique([orderId, status])
     @@map("order_tracking")
 }

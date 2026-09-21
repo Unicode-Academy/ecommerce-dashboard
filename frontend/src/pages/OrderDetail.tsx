@@ -27,7 +27,13 @@ import {
 } from "@/services/order.service";
 import moment from "moment";
 import type { Order } from "@/types/order.type";
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  type ChangeEvent,
+  type SubmitEvent,
+} from "react";
 import { cn } from "@/lib/utils";
 import {
   PAYMENT_STATUS_BG,
@@ -43,11 +49,18 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { debounce } from "@/utils/utils";
-import Timeline from "@/components/timeline";
+import Timeline from "@/components/timeline/Timeline";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 export default function OrderDetail() {
   const { id } = useParams();
   const [statusModal, setStatusModal] = useState<boolean>(false);
   const [paymentStatusModal, setPaymentStatusModal] = useState<boolean>(false);
+  const [statusForm, setStatusForm] = useState({
+    status: "",
+    title: "",
+    note: "",
+  });
   const {
     data: order,
     isLoading,
@@ -89,6 +102,39 @@ export default function OrderDetail() {
   const noteMutation = useMutation({
     mutationFn: updateNote,
   });
+
+  const handleSaveStatus = (e: SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const { title, note, status } = statusForm;
+    if (status === order.status) {
+      return;
+    }
+    statusMutation.mutate(
+      {
+        orderId: +id!,
+        status,
+        title,
+        note,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ["orders", id] });
+          toast.success("Change status success");
+          setStatusModal(false);
+        },
+        onError: () => {
+          toast.error("Change status failed");
+        },
+      },
+    );
+  };
+
+  useEffect(() => {
+    const initStatus = () => {
+      setStatusForm({ ...statusForm, status: order.status });
+    };
+    initStatus();
+  }, [order]);
 
   return (
     <>
@@ -334,36 +380,45 @@ export default function OrderDetail() {
         }}
         title="Change Status"
       >
-        <Select
-          value={order.status}
-          onValueChange={(status: string) => {
-            statusMutation.mutate(
-              {
-                orderId: +id!,
-                status,
-              },
-              {
-                onSuccess: () => {
-                  queryClient.invalidateQueries({ queryKey: ["orders", id] });
-                  toast.success("Change status success");
-                  setStatusModal(false);
-                },
-                onError: () => {
-                  toast.error("Change status failed");
-                },
-              },
-            );
-          }}
-        >
-          <SelectTrigger className="py-5 w-full">
-            <SelectValue placeholder="Select a Status" />
-          </SelectTrigger>
-          <SelectContent className="w-full">
-            {orderStatusList?.map((item: string) => (
-              <SelectItem value={item}>{item}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <form onSubmit={handleSaveStatus}>
+          <Select
+            value={statusForm.status}
+            onValueChange={(status: string) => {
+              setStatusForm({ ...statusForm, status });
+            }}
+          >
+            <SelectTrigger className="py-5 w-full">
+              <SelectValue placeholder="Select a Status" />
+            </SelectTrigger>
+            <SelectContent className="w-full">
+              {orderStatusList?.map((item: string, index: number) => (
+                <SelectItem key={index} value={item}>
+                  {item}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <div className="mb-3">
+            <label>Title</label>
+            <Input
+              type="text"
+              placeholder="Title..."
+              onChange={(e: ChangeEvent<HTMLInputElement>) => {
+                setStatusForm({ ...statusForm, title: e.target.value });
+              }}
+            />
+          </div>
+          <div className="mb-3">
+            <label>Note</label>
+            <Textarea
+              placeholder="Title..."
+              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => {
+                setStatusForm({ ...statusForm, note: e.target.value });
+              }}
+            />
+          </div>
+          <Button className="bg-[#4880FF]">Save</Button>
+        </form>
       </Modal>
 
       <Modal

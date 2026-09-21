@@ -253,6 +253,7 @@ export type OrderTrackingOrderByWithRelationInput = {
 
 export type OrderTrackingWhereUniqueInput = Prisma.AtLeast<{
   id?: number
+  orderId_status?: Prisma.OrderTrackingOrderIdStatusCompoundUniqueInput
   AND?: Prisma.OrderTrackingWhereInput | Prisma.OrderTrackingWhereInput[]
   OR?: Prisma.OrderTrackingWhereInput[]
   NOT?: Prisma.OrderTrackingWhereInput | Prisma.OrderTrackingWhereInput[]
@@ -263,7 +264,7 @@ export type OrderTrackingWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"OrderTracking"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"OrderTracking"> | Date | string
   order?: Prisma.XOR<Prisma.OrderScalarRelationFilter, Prisma.OrderWhereInput>
-}, "id">
+}, "id" | "orderId_status">
 
 export type OrderTrackingOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -363,6 +364,11 @@ export type OrderTrackingOrderByRelevanceInput = {
   fields: Prisma.OrderTrackingOrderByRelevanceFieldEnum | Prisma.OrderTrackingOrderByRelevanceFieldEnum[]
   sort: Prisma.SortOrder
   search: string
+}
+
+export type OrderTrackingOrderIdStatusCompoundUniqueInput = {
+  orderId: number
+  status: $Enums.OrderStatus
 }
 
 export type OrderTrackingCountOrderByAggregateInput = {

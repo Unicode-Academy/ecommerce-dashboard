@@ -66,14 +66,16 @@ export const orderService = {
 
     },
 
-    async updateStatus(orderId: number, status: OrderStatus) {
+    async updateStatus(orderId: number, status: OrderStatus, title: string = '', note: string = '') {
         return prisma.order.update({
             where: { id: orderId },
             data: {
                 status,
                 tracking: {
                     create: {
-                        status
+                        status,
+                        title,
+                        note,
                     }
                 }
             }
